@@ -1,10 +1,10 @@
 import React, { useState } from 'react';
 import { ImageBackground, View, Text, StyleSheet, TouchableOpacity, TextInput, Platform } from 'react-native';
-import { useNavigation } from '@react-navigation/native';
-const API_URL = Platform.OS === 'ios' ? 'http://localhost:5000' : 'http://10.0.2.2:5000';
+
+const API_URL = 'http://10.0.2.2:8083';
 
 const AuthScreen = () => {
-    const navigation = useNavigation();
+
     const [email, setEmail] = useState('');
     const [name, setName] = useState('');
     const [password, setPassword] = useState('');
@@ -19,60 +19,88 @@ const AuthScreen = () => {
     };
 
     const onLoggedIn = token => {
-        fetch(`${API_URL}/private`, {
+        fetch('http://10.0.2.2:8083/user/get', {
             method: 'GET',
             headers: {
                 'Content-Type': 'application/json',
-                'Authorization': `Bearer ${token}`, 
             },
         })
-        .then(async res => { 
-            try {
-                const jsonRes = await res.json();
-                if (res.status === 200) {
-                    setMessage(jsonRes.message);
-                    navigation.navigate('Home'); // Navigate to Home after successful login
-                }
-            } catch (err) {
+            .then(async res => {
+                try {
+                    if (res.status === 200) {
+                        setMessage("LOG");
+                    }
+                } catch (err) {
+                    console.log(err);
+                };
+            })
+            .catch(err => {
                 console.log(err);
-            };
-        })
-        .catch(err => {
-            console.log(err);
-        });
+            });
     }
-    
+
     const onSubmitHandler = () => {
         const payload = {
             email,
-            name,
             password,
+            name,
         };
-        fetch(`${API_URL}/${isLogin ? 'login' : 'signup'}`, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify(payload),
-        })
-        .then(async res => { 
-            try {
-                const jsonRes = await res.json();
-                if (res.status !== 200) {
-                    setIsError(true);
-                    setMessage(jsonRes.message);
-                } else {
-                    onLoggedIn(jsonRes.token);
-                    setIsError(false);
-                    setMessage(jsonRes.message);
-                }
-            } catch (err) {
-                console.log(err);
-            };
-        })
-        .catch(err => {
-            console.log(err);
-        });
+        if(!isLogin){
+            fetch('http://10.0.2.2:8083/user/save', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(payload),
+            })
+                .then(async res => {
+                    try {
+                        if (res.status !== 200) {
+                            setIsError(true);
+                            setMessage("ERROR");
+                        } else {
+                            setIsError(false);
+                            setMessage("SIGNED IN");
+                        }
+                    } catch (err) {
+                        console.log("err");
+                    };
+                })
+                .catch(err => {
+                    console.log(err);
+                });
+        }
+        else{
+            fetch('http://10.0.2.2:8083/user/get', {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+            })
+                .then(async res => {
+                    try {
+                        if (res.status !== 200) {
+                            setIsError(true);
+                            setMessage("ERROR");
+                        } else {
+                            const responseData = await res.json();
+                            const nameExists = responseData.some(item => item.email === email);
+                            const passExists = responseData.some(item => item.pass === password);
+                            if (nameExists && passExists) {
+                                setIsError(false);
+                                setMessage("LOGGED IN");}
+                            else{
+                                setIsError(true);
+                                setMessage("Invalid");
+                            }}
+                    } catch (err) {
+                        console.log("err");
+                    };
+                })
+                .catch(err => {
+                    console.log(err);
+                });
+        }
     };
 
     const getMessage = () => {
@@ -81,7 +109,7 @@ const AuthScreen = () => {
     }
 
     return (
-        <ImageBackground source={require('../assets/gradient-back.jpeg')} style={styles.image}>
+        <ImageBackground source={require('../public/images/gradient-back.jpeg')} style={styles.image}>
             <View style={styles.card}>
                 <Text style={styles.heading}>{isLogin ? 'Login' : 'Signup'}</Text>
                 <View style={styles.form}>
@@ -91,12 +119,12 @@ const AuthScreen = () => {
                         <TextInput secureTextEntry={true} style={styles.input} placeholder="Password" onChangeText={setPassword}></TextInput>
                         <Text style={[styles.message, {color: isError ? 'red' : 'green'}]}>{message ? getMessage() : null}</Text>
                         <TouchableOpacity style={styles.button} onPress={onSubmitHandler}>
-                            <Text style={styles.buttonText}>Submit</Text>
+                            <Text style={styles.buttonText}>Done</Text>
                         </TouchableOpacity>
                         <TouchableOpacity style={styles.buttonAlt} onPress={onChangeHandler}>
                             <Text style={styles.buttonAltText}>{isLogin ? 'Sign Up' : 'Log In'}</Text>
                         </TouchableOpacity>
-                    </View>    
+                    </View>
                 </View>
             </View>
         </ImageBackground>
@@ -108,7 +136,7 @@ const styles = StyleSheet.create({
         flex: 1,
         width: '100%',
         alignItems: 'center',
-    },  
+    },
     card: {
         flex: 1,
         backgroundColor: 'rgba(255, 255, 255, 0.4)',
@@ -137,13 +165,13 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         justifyContent: 'center',
         paddingTop: '10%',
-    },  
+    },
     input: {
         width: '80%',
         borderBottomWidth: 1,
         borderBottomColor: 'black',
         paddingTop: 10,
-        fontSize: 16, 
+        fontSize: 16,
         minHeight: 40,
     },
     button: {
