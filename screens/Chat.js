@@ -2,12 +2,14 @@ import React from 'react';
 import { View, Text, TouchableOpacity, StyleSheet, FlatList } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import ChatPage from './ChatPage';
+import ChatGPT from './ChatGPT';
 
 const data = [
   { id: '1', name: 'My family', message: 'William: For fishing!' },
   { id: '2', name: 'Mr. L Fruit Picking', message: 'Our event is on...' },
   { id: '3', name: 'Healthy Living care', message: 'Please note on the date of the event...' },
-  { id: '4', name: 'Jetta travel', message: 'The shuttle is arriving at...' }
+  { id: '4', name: 'Jetta travel', message: 'The shuttle is arriving at...' },
+  { id: '5', name: 'GPT', message: 'You know who!' }
 ];
 
 const HomePage = () => {
@@ -16,7 +18,10 @@ const HomePage = () => {
   const handleItemClick = (itemName) => {
     if (itemName === 'My family') {
       navigation.navigate('ChatPageGroup'); // Navigate to ChatPageGroup if 'My family' is clicked
-    } else {
+    }else if (itemName === 'GPT') {
+           navigation.navigate('ChatGPT');
+   }
+    else {
       navigation.navigate('ChatPage'); // Default navigation to ChatPage for other items
     }
   };
