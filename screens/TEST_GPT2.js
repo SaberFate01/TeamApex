@@ -9,8 +9,8 @@ const ChatGPT = () => {
 
   const BOT_IMG = "https://upload.wikimedia.org/wikipedia/commons/thumb/b/b5/Windows_10_Default_Profile_Picture.svg/2048px-Windows_10_Default_Profile_Picture.svg.png";
   const PERSON_IMG = "https://upload.wikimedia.org/wikipedia/commons/thumb/b/b5/Windows_10_Default_Profile_Picture.svg/2048px-Windows_10_Default_Profile_Picture.svg.png";
-  const BOT_NAME = "GPT-3";
-  const PERSON_NAME = "Me";
+  const BOT_NAME = "Fate";
+  const PERSON_NAME = "Saber";
   const apiKey = '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'; // Replace with your OpenAI API key
   const apiUrl = 'https://api.openai.com/v1/chat/completions';
   const openai = new OpenAI({
@@ -24,10 +24,10 @@ const ChatGPT = () => {
     }
   };
 
-const botResponse = async () => {
+const botResponse = () => {
     try {
                 //const main=cal.main();
-                console.log(input);
+                console.log(message);
                 const chatCompletion = await fetch(apiUrl, {
                   method: 'POST',
                   headers: {
@@ -35,7 +35,7 @@ const botResponse = async () => {
                     'Authorization': `Bearer ${apiKey}`,
                   },
                   body: JSON.stringify({
-                    messages: [{ role: 'user', content: input }],
+                    messages: [{ role: 'user', content: message }],
                     model: 'gpt-3.5-turbo',
                   }),
                 });
@@ -43,13 +43,13 @@ const botResponse = async () => {
                 console.log(chatCompletionData);
                 const reply = chatCompletionData.choices[0].message.content;
                 const msgText = reply;
-                console.log(reply);
-                const delay = msgText.split(" ").length * 2;
-                setTimeout(() => {
+                console.log(reply);}
+
+    const delay = msgText.split(" ").length * 1;
+
+    setTimeout(() => {
       setMessages(prevMessages => [...prevMessages, { name: BOT_NAME, img: BOT_IMG, side: 'left', text: msgText }]);
-    }, delay);}catch (error) {
-                                         console.error('Error fetching ChatGPT response:', error);
-                                       }
+    }, delay);
   };
 
   return (
@@ -157,65 +157,3 @@ const styles = StyleSheet.create({
 });
 
 export default ChatGPT;
-
-//import React, { useState } from 'react';
-//import { View, TextInput, Button, FlatList, Text } from 'react-native';
-//import OpenAI from 'openai';
-//const readlineSync = require("readline-sync");
-//
-//const ChatGPT = () => {
-//    const [message, setMessage] = useState('');
-//    const [chat, setChat] = useState([]);
-//    const apiKey = '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'; // Replace with your OpenAI API key
-//    const apiUrl = 'https://api.openai.com/v1/chat/completions';
-//    const openai = new OpenAI({
-//             apiKey: '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' // This is also the default, can be omitted
-//           });
-//
-//    const sendMessage = async () => {
-//        const newChat = [...chat, { role: 'user', content: message }];
-//        setChat(newChat);
-//        setMessage('');
-//
-//        try {
-//            //const main=cal.main();
-//            console.log(message);
-//            const chatCompletion = await fetch(apiUrl, {
-//              method: 'POST',
-//              headers: {
-//                'Content-Type': 'application/json',
-//                'Authorization': `Bearer ${apiKey}`,
-//              },
-//              body: JSON.stringify({
-//                messages: [{ role: 'user', content: message }],
-//                model: 'gpt-3.5-turbo',
-//              }),
-//            });
-//            const chatCompletionData = await chatCompletion.json();
-//            console.log(chatCompletionData);
-//            const reply = chatCompletionData.choices[0].message.content;
-//            console.log(reply);
-//            newChat.push({ role: 'assistant', content: reply });
-//            setChat(newChat);
-//        } catch (error) {
-//          console.error('Error fetching ChatGPT response:', error);
-//        }
-//      };
-//
-//  return (
-//    <View>
-//      <FlatList
-//        data={chat}
-//        keyExtractor={(item, index) => index.toString()}
-//        renderItem={({ item }) => <Text>{item.content}</Text>}
-//      />
-//      <TextInput
-//        value={message}
-//        onChangeText={(text) => setMessage(text)}
-//      />
-//      <Button title="Send" onPress={sendMessage} />
-//    </View>
-//  );
-//};
-//
-//export default ChatGPT;
