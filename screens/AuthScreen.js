@@ -42,7 +42,10 @@ const AuthScreen = () => {
       const result = await response.json(); // Assuming server returns JSON
   
       console.log('Server Response:', result); // Log the server response
-  
+/////////////////////////////////////////////////////////////////////////////////
+      user_auth(result[0].userid);
+      console.log(Id())
+/////////////////////////////////////////////////////////////////////////////////
       if (isLogin) {
         if (result && result.length > 0 && result[0].email === email) { // Adjust this based on actual server response
           navigation.navigate('Home');
@@ -172,5 +175,13 @@ const styles = StyleSheet.create({
         marginVertical: '5%',
     },
 });
-
+var a = -1;
+function user_auth(user_ID) {
+    a= user_ID;
+    return user_ID;
+}
+function Id() {
+    return a;
+}
 export default AuthScreen;
+export {Id};

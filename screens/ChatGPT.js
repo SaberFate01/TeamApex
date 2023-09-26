@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
 import { StyleSheet, View, TextInput, Button, ScrollView, Image, Text } from 'react-native';
 import OpenAI from 'openai';
+const DATABASE_URL = 'https://flask-dot-acoustic-cirrus-396009.ts.r.appspot.com/database';
+import {Id} from './AuthScreen.js';
 
 const ChatGPT = () => {
   const [input, setInput] = useState('');
@@ -26,8 +28,51 @@ const ChatGPT = () => {
 
 const botResponse = async () => {
     try {
-                //const main=cal.main();
-                console.log(input);
+        const id = Id();
+        const query = `SELECT * FROM GPT WHERE senderID='${id}'`;
+
+              console.log('SQL Query:', query); // Log the SQL query
+
+              const response = await fetch(DATABASE_URL, {
+                method: 'POST',
+                headers: {
+                  'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                  user: 'root',
+                  pass: 'root',
+                  db_name: 'users',
+                  query: query,
+                }),
+              });
+              var main_message = "";
+              const result = await response.json(); // Assuming server returns JSON
+              console.log('Server Result:', result); // Log the server response
+              if ( String(result) === ""){
+                main_message = "";
+                const query2 = `INSERT INTO GPT (senderID, message) VALUES ('${id}', '${main_message}')`;
+                console.log('SQL Query:', query2); // Log the SQL query
+                const response2 = await fetch(DATABASE_URL, {
+                        method: 'POST',
+                        headers: {
+                          'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({
+                          user: 'root',
+                          pass: 'root',
+                          db_name: 'users',
+                          query: query2,
+                        }),
+                      });
+              }
+              else{
+                main_message = result[0].message;
+                }
+/////////////////////////////////////////////////////////////////////////////////////
+                console.log("message",main_message);
+                if (input.length + main_message.length >=300){
+                    main_message = "";
+                }
                 const chatCompletion = await fetch(apiUrl, {
                   method: 'POST',
                   headers: {
@@ -35,7 +80,7 @@ const botResponse = async () => {
                     'Authorization': `Bearer ${apiKey}`,
                   },
                   body: JSON.stringify({
-                    messages: [{ role: 'user', content: input }],
+                    messages: [{ role: 'user', content: main_message + input }],
                     model: 'gpt-3.5-turbo',
                   }),
                 });
@@ -44,6 +89,24 @@ const botResponse = async () => {
                 const reply = chatCompletionData.choices[0].message.content;
                 const msgText = reply;
                 console.log(reply);
+                const textGPT = main_message + ' ' + input;
+                console.log("text: ",textGPT);
+////////////////////////////////////////////////////////////////////////////////////
+                const query1 = `UPDATE GPT SET message ='${textGPT}' WHERE senderID='${id}'`;
+                                console.log('SQL Query:', query); // Log the SQL query
+                                const response1 = await fetch(DATABASE_URL, {
+                                        method: 'POST',
+                                        headers: {
+                                          'Content-Type': 'application/json',
+                                        },
+                                        body: JSON.stringify({
+                                          user: 'root',
+                                          pass: 'root',
+                                          db_name: 'users',
+                                          query: query1,
+                                        }),
+                                      });
+///////////////////////////////////////////////////////////////////////////////////
                 const delay = msgText.split(" ").length * 2;
                 setTimeout(() => {
       setMessages(prevMessages => [...prevMessages, { name: BOT_NAME, img: BOT_IMG, side: 'left', text: msgText }]);
