@@ -17,9 +17,18 @@ const AuthScreen = () => {
     setIsLogin(!isLogin);
     setMessage('');
   };
+  const check = (query)=>{
+    if (query.includes("=") || query.includes("#") || query.includes("/*") || query.includes("*/") || query.includes("union") || query.includes("--")){
+        console.log(query);
+        return true;}
+    return false;
+  }
 
   const onSubmitHandler = async () => {
     try {
+    if (check(email) || check(password)){
+        throw new Error('Bad credentials');
+    }
       const query = isLogin
         ? `SELECT * FROM userprofiles WHERE email='${email}' AND password='${password}'`
         : `INSERT INTO userprofiles (email, username, password, date_of_birth) VALUES ('${email}', '${name}', '${password}', '${dateOfBirth}')`;
