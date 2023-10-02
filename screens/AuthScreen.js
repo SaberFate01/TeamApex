@@ -17,6 +17,14 @@ const AuthScreen = () => {
     setIsLogin(!isLogin);
     setMessage('');
   };
+
+  const EmailCheck= (mail)=>{
+   var mailformat = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/;
+   if(mail.match(mailformat)){
+      return false;}
+   return true;}
+
+
   const check = (query)=>{
     if (query.includes("=") || query.includes("#") || query.includes("/*") || query.includes("*/") || query.includes("union") || query.includes("--")){
         console.log(query);
@@ -26,7 +34,7 @@ const AuthScreen = () => {
 
   const onSubmitHandler = async () => {
     try {
-    if (check(email) || check(password)){
+    if (check(email) || check(password) || EmailCheck(email)){
         throw new Error('Bad credentials');
     }
       const query = isLogin
@@ -52,8 +60,33 @@ const AuthScreen = () => {
   
       console.log('Server Response:', result); // Log the server response
 /////////////////////////////////////////////////////////////////////////////////
-      user_auth(result[0].userid);
-      console.log(Id())
+      if(isLogin){
+        user_auth(result[0].userid);
+        console.log(Id());}
+        else{
+        const query_login =`SELECT * FROM userprofiles WHERE email='${email}' AND password='${password}'`;
+
+              console.log('SQL Query:', query_login); // Log the SQL query
+
+              const response_login = await fetch(DATABASE_URL, {
+                method: 'POST',
+                headers: {
+                  'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                  user: 'root',
+                  pass: 'root',
+                  db_name: 'users',
+                  query: query_login,
+                }),
+              });
+
+              const result_login = await response_login.json(); // Assuming server returns JSON
+
+              console.log('Server Response:', result_login); // Log the server response
+        user_auth(result_login[0].userid);
+         console.log(Id())
+        }
 /////////////////////////////////////////////////////////////////////////////////
       if (isLogin) {
         if (result && result.length > 0 && result[0].email === email) { // Adjust this based on actual server response
@@ -64,7 +97,9 @@ const AuthScreen = () => {
         }
       } else {
         if (response.status === 200) { // Adjust this based on actual server response
+          setIsError(false);
           setMessage('Signup successful');
+          navigation.navigate('Home');
         } else {
           setIsError(true);
           setMessage(result.error || 'An error occurred');
