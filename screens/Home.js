@@ -6,10 +6,7 @@ import { View, Text, Image, StyleSheet, FlatList, Dimensions, TouchableOpacity, 
 import { useState, useEffect } from 'react';
 //import logo from '../data/Image';
 import logo from '../assets/logo.jpg';
-const DATABASE_URL = 'https://acoustic-cirrus-396009.ts.r.appspot.com/events';
-const user = 'root';
-const pass = 'root';
-const db_name = 'users';
+import {EVENT_URL} from '../data/Global'
 
 const Home = () => {
   const [data, setData] = useState([]);
@@ -21,7 +18,7 @@ const Home = () => {
     const fetchData = async () => {
       setLoading(true);
       try {
-        const response = await fetch('https://flask-dot-acoustic-cirrus-396009.ts.r.appspot.com/events', {
+        const response = await fetch(EVENT_URL, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
@@ -48,23 +45,15 @@ const Home = () => {
   const [modalVisible, setModalVisible] = useState(false);
   const [selectedEvent, setSelectedEvent] = useState(null);
 
-  const showModal = (item) => {
-    setSelectedEvent(item);
-  };
-
   const hideModal = () => {
     setSelectedEvent(null);
-  };
-
-  const getValue = (item, label) => {
-    const field = item.customFields.find(field => field.label === label);
-    return field ? field.value : 'null';
   };
 
   const handlePress = (item) => {
     setSelectedEvent(item);
     setModalVisible(true);
   };
+
   return (
     <View style={styles.container}>
       <View style={styles.header}></View>
@@ -81,7 +70,7 @@ const Home = () => {
         ListFooterComponent={<View style={{ height: 50 }} />} // Adding a footer
         renderItem={({ item }) => (
           <TouchableOpacity onPress={() => handlePress(item)} style={styles.clickableItemContainer}>
-            <Image source={{ uri: item.eventImage.url }} style={styles.image} />
+            <Image source={{ uri: item.eventImage }} style={styles.image} />
             <View style={styles.descriptionContainer}>
               <Text numberOfLines={3} ellipsizeMode="tail">{item.description}</Text>
             </View>
@@ -92,12 +81,12 @@ const Home = () => {
         <Modal
           animationType="slide"
           transparent={true}
-          visible={true}
+          visible={modalVisible}
           onRequestClose={hideModal}
         >
           <View style={styles.centeredView}>
             <View style={styles.modalView}>
-              <TouchableOpacity style={styles.closeButton} onPress={hideModal}>
+              <TouchableOpacity style={styles.closeButton} onPress={() => setModalVisible(false)}>
                 <Text style={styles.closeButtonText}>X</Text>
               </TouchableOpacity>
               <ScrollView showsVerticalScrollIndicator={false}>
@@ -105,14 +94,16 @@ const Home = () => {
                 <Text>{selectedEvent.title}</Text>
                 <Text style={styles.modalTitle}>Description</Text>
                 <Text>{selectedEvent.description}</Text>
-                <Text style={styles.modalTitle}>Bookings</Text>
-                <Text>{getValue(selectedEvent, 'Bookings')}</Text>
-                <Text style={styles.modalTitle}>Venue</Text>
-                <Text>{getValue(selectedEvent, 'Venue')}</Text>
-                <Text style={styles.modalTitle}>Meeting Point</Text>
-                <Text>{getValue(selectedEvent, 'Meeting point')}</Text>
                 <Text style={styles.modalTitle}>Cost</Text>
-                <Text>{getValue(selectedEvent, 'cost')}</Text>
+                <Text>{selectedEvent.cost}</Text>
+                <Text style={styles.modalTitle}>Age</Text>
+                <Text>{selectedEvent.age}</Text>
+                <Text style={styles.modalTitle}>Location</Text>
+                <Text>{selectedEvent.location}</Text>
+                <Text style={styles.modalTitle}>Start Date & Time</Text>
+                <Text>{selectedEvent.startDateTime}</Text>
+                <Text style={styles.modalTitle}>End Date & Time</Text>
+                <Text>{selectedEvent.endDateTime}</Text>
                 {/* ... other fields */}
               </ScrollView>
             </View>

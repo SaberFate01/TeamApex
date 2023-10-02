@@ -1,9 +1,13 @@
 import React, { useState } from 'react';
-import { View, Text, TouchableOpacity, StyleSheet, Image, Modal } from 'react-native';
+import { View, Text, TouchableOpacity, StyleSheet, Image, Modal, Linking } from 'react-native';
 import logo from '../assets/logo.jpg';
 
 const CustomHeader = ({ navigation }) => {
   const [showModal, setShowModal] = useState(false);
+
+  const handleEmergencyCall = () => {
+    Linking.openURL('tel:999');
+  };
 
   return (
     <View style={styles.container}>
@@ -12,16 +16,18 @@ const CustomHeader = ({ navigation }) => {
         visible={showModal}
         animationType="slide"
       >
-        <View style={styles.modalContainer}>
-          <TouchableOpacity onPress={() => setShowModal(false)}>
-            <Text style={styles.modalButton}>Back</Text>
-          </TouchableOpacity>
-          <TouchableOpacity onPress={() => { /* Call emergency logic */ }}>
-            <Text style={styles.modalButton}>Call Emergency</Text>
-          </TouchableOpacity>
-          <TouchableOpacity onPress={() => { /* Share location logic */ }}>
-            <Text style={styles.modalButton}>Share Location</Text>
-          </TouchableOpacity>
+        <View style={styles.modalBackground}>
+          <View style={styles.modalContainer}>
+            <TouchableOpacity style={styles.modalButton} onPress={() => setShowModal(false)}>
+              <Text style={styles.modalButtonText}>Back</Text>
+            </TouchableOpacity>
+            <TouchableOpacity style={styles.modalButton} onPress={handleEmergencyCall}>
+              <Text style={styles.modalButtonText}>Call Emergency</Text>
+            </TouchableOpacity>
+            <TouchableOpacity style={styles.modalButton} onPress={() => { /* Share location logic */ }}>
+              <Text style={styles.modalButtonText}>Share Location</Text>
+            </TouchableOpacity>
+          </View>
         </View>
       </Modal>
 
@@ -68,25 +74,6 @@ const styles = StyleSheet.create({
     justifyContent: 'space-around',
     marginTop: 10,
   },
-  buttonText: {
-    fontSize: 16,
-  },
-  logo: {
-    width: 150,
-    height: 30,
-  },
-  modalContainer: {
-    flex: 1,
-    backgroundColor: 'rgba(0,0,0,0.5)',
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  modalButton: {
-    backgroundColor: 'white',
-    padding: 10,
-    margin: 10,
-    borderRadius: 5,
-  },
   exclamationButton: {
     width: 50,
     height: 50,
@@ -98,6 +85,39 @@ const styles = StyleSheet.create({
   exclamationText: {
     fontSize: 24,
     color: 'white',
+  },
+  buttonText: {
+    fontSize: 16,
+  },
+  logo: {
+    width: 150,
+    height: 30,
+  },
+  modalBackground: {
+    flex: 1,
+    backgroundColor: 'rgba(0,0,0,0.5)',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  modalContainer: {
+    width: '80%',
+    backgroundColor: 'white',
+    borderRadius: 10,
+    padding: 20,
+    alignItems: 'center',
+  },
+  modalButton: {
+    width: '100%',
+    padding: 15,
+    borderRadius: 10,
+    backgroundColor: '#2196F3',
+    marginVertical: 10,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  modalButtonText: {
+    color: 'white',
+    fontSize: 16,
   },
 });
 
