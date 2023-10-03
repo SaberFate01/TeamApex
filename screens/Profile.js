@@ -1,12 +1,15 @@
-import React from 'react';
+import React, { useContext }  from 'react';
 import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
+import { UserContext } from '../userContext';
 
 const Profile = () => {
+  const { user } = useContext(UserContext);
+
   return (
     <View style={styles.container}>
       <View style={styles.header}>
         <View style={styles.circle}></View>
-        <Text style={styles.name}>Name</Text>
+        <Text style={styles.name}>{user.username}</Text>
         <TouchableOpacity style={styles.editButton}>
           <Text>Edit</Text>
         </TouchableOpacity>

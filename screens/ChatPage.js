@@ -5,8 +5,8 @@ import { StyleSheet, View, TextInput, Button, ScrollView, Image, Text } from 're
 const ChatPage = ({ route, navigation }) => {
   const [input, setInput] = useState('');
   const [messages, setMessages] = useState([]);
-  const { chatData } = route.params;
-  console.log(chatData);
+  const { chatData, username } = route.params;
+  console.log(chatData, username);
   const BOT_MSGS = [
     "Hi, how are you?",
     "Ohh... I can't understand what you trying to say. Sorry!",
@@ -17,7 +17,7 @@ const ChatPage = ({ route, navigation }) => {
 
   const BOT_IMG = "https://upload.wikimedia.org/wikipedia/commons/thumb/b/b5/Windows_10_Default_Profile_Picture.svg/2048px-Windows_10_Default_Profile_Picture.svg.png";
   const PERSON_IMG = "https://upload.wikimedia.org/wikipedia/commons/thumb/b/b5/Windows_10_Default_Profile_Picture.svg/2048px-Windows_10_Default_Profile_Picture.svg.png";
-  const BOT_NAME = "Fate";
+  const BOT_NAME = username;
   const PERSON_NAME = "Saber";
 
   const handleSubmit = () => {

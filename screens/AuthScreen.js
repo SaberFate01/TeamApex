@@ -1,6 +1,8 @@
-import React, { useState } from 'react';
+import React, { useState, useContext } from 'react';
 import { ImageBackground, View, Text, StyleSheet, TouchableOpacity, TextInput, Platform } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
+import { UserContext } from '../userContext';
+
 const DATABASE_URL = 'https://flask-dot-acoustic-cirrus-396009.ts.r.appspot.com/database';
 
 const AuthScreen = () => {
@@ -12,6 +14,7 @@ const AuthScreen = () => {
   const [isError, setIsError] = useState(false);
   const [message, setMessage] = useState('');
   const [isLogin, setIsLogin] = useState(true);
+  const { setUser } = useContext(UserContext);
 
   const onChangeHandler = () => {
     setIsLogin(!isLogin);
@@ -91,6 +94,10 @@ const AuthScreen = () => {
 /////////////////////////////////////////////////////////////////////////////////
       if (isLogin) {
         if (result && result.length > 0 && result[0].email === email) { // Adjust this based on actual server response
+          setUser({
+            userid: result[0].userid,
+            username: result[0].username,
+          });
           navigation.navigate('Home');
         } else {
           setIsError(true);

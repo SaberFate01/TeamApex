@@ -34,6 +34,7 @@ import Profile from './screens/Profile';
 import ChatPage from './screens/ChatPage';
 import ChatPageGroup from './screens/ChatPageGroup';
 import ChatGPT from './screens/ChatGPT';
+import { UserProvider } from './userContext';
 
 
 const Stack = createStackNavigator();
@@ -41,6 +42,7 @@ const Stack = createStackNavigator();
 function App() {
   
   return (
+    <UserProvider>
     <NavigationContainer>
       <Stack.Navigator
         screenOptions={{
@@ -58,6 +60,7 @@ function App() {
         <Stack.Screen name="ChatPageGroup" component={ChatPageGroup}/>
       </Stack.Navigator>
     </NavigationContainer>
+    </UserProvider>
   );
 }
 
