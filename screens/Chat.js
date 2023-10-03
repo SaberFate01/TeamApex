@@ -85,7 +85,7 @@ const HomePage = () => {
   };
   const handleItemClick = (item) => {
     const username = usernames[item.otherID] || 'Unknown User';
-    if (item.otherID === 'GPT') {
+    if (item.otherID === '3') {
       navigation.navigate('ChatGPT', { chatData: item });
     } else {
       navigation.navigate('ChatPage', { chatData: item, username: username });
