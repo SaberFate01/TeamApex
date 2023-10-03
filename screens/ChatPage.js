@@ -9,7 +9,7 @@ const ChatPage = ({ route, navigation }) => {
   const { chatData, username } = route.params;
   const { user } = useContext(UserContext);
   
-  console.log(chatData, username);
+  //console.log(chatData, username);
 
   useEffect(() => {
     // Fetch initial messages
@@ -50,7 +50,6 @@ const ChatPage = ({ route, navigation }) => {
 };
 
   const handleSubmit = async () => {
-    console.log(user.userid,chatData.otherID,new Date().toISOString(),input);
     if (input) {
         try {
             // Send message to server

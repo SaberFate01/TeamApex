@@ -1,16 +1,19 @@
-import React from 'react';
+import React, {useContext} from 'react';
 import { View, Text, TouchableOpacity, StyleSheet, FlatList, Image} from 'react-native';
 import { useState, useEffect } from 'react';
 import { TextInput } from 'react-native-gesture-handler';
 import { useNavigation } from '@react-navigation/native';
 import ChatPage from './ChatPage';
 import ChatGPT from './ChatGPT';
+import { UserContext } from '../userContext';
 
 const HomePage = () => {
   const [data, setData] = useState([]);
   const [usernames, setUsernames] = useState({});
   const navigation = useNavigation();
   const [searchTerm, setSearchTerm] = useState('');
+  const { user } = useContext(UserContext);
+
   const gptData = [{
     otherID: '3',
     usernames:'GPT',
@@ -33,7 +36,7 @@ const HomePage = () => {
             'Content-Type': 'application/json',
           },
           body: JSON.stringify({
-            userID: 1,
+            userID: user.userid,
           }),
         });
         const result = await response.json();

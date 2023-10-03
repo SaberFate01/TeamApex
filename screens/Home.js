@@ -4,6 +4,7 @@ import React from 'react';
 //import { View, Button, StyleSheet, ScrollView, Dimensions } from 'react-native';
 import { View, Text, Image, StyleSheet, FlatList, Dimensions, TouchableOpacity, ScrollView, Button, Modal} from 'react-native';
 import { useState, useEffect } from 'react';
+import { TextInput } from 'react-native-gesture-handler';
 //import logo from '../data/Image';
 import logo from '../assets/logo.jpg';
 import {EVENT_URL} from '../data/Global'
@@ -13,6 +14,8 @@ const Home = () => {
   const [loading, setLoading] = useState(false);
   const [page, setPage] = useState(1);
   const [fetchedEventIDs, setFetchedEventIDs] = useState([]);
+  const [searchTerm, setSearchTerm] = useState('');
+  const [filteredData, setFilteredData] = useState([]);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -42,6 +45,18 @@ const Home = () => {
     fetchData();
   }, [page]);
 
+  useEffect(() => {
+    if (searchTerm === '') {
+      setFilteredData(data);
+    } else {
+      const results = data.filter(event =>
+        event.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        event.description.toLowerCase().includes(searchTerm.toLowerCase())
+      );
+      setFilteredData(results);
+    }
+  }, [searchTerm, data]);
+
   const [modalVisible, setModalVisible] = useState(false);
   const [selectedEvent, setSelectedEvent] = useState(null);
 
@@ -56,9 +71,24 @@ const Home = () => {
 
   return (
     <View style={styles.container}>
-      <View style={styles.header}></View>
+      <View style={styles.searchBarContainer}>
+        <TextInput 
+          style={styles.searchBar}
+          placeholder="Search..."
+          value={searchTerm}
+          onChangeText={setSearchTerm}
+        />
+        <Image 
+          source={require('../assets/magnifying_glass.png')}
+          style={styles.magnifyingGlass}
+        />
+        <TouchableOpacity style={styles.createButton}>
+          <Text style={styles.createButtonText}>Create</Text>
+        </TouchableOpacity>
+      </View>
+
       <FlatList
-        data={data}
+        data={filteredData}
         keyExtractor={(item) => item.eventID.toString()}
         pagingEnabled
         showsVerticalScrollIndicator={false}
@@ -114,63 +144,6 @@ const Home = () => {
   );
 };
 
-
-/**
- * const Home = () => {
-  const [data, setData] = useState([]);
-  const [loading, setLoading] = useState(false);
-  const [page, setPage] = useState(1);
-
-  useEffect(() => {
-    const fetchData = async () => {
-      setLoading(true);
-      try {
-        const response = await fetch('https://acoustic-cirrus-396009.ts.r.appspot.com/events', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({
-            query: "",
-            num_return: "5",
-          }),
-        });
-        const result = await response.json();
-        setData(prevData => [...prevData, ...result]);
-        setLoading(false);
-      } catch (error) {
-        console.error("Error fetching data:", error);
-        setLoading(false);
-      }
-    };
-
-    fetchData();
-  }, [page]);
-
-  return (
-    <View style={styles.container}>
-      <View style={styles.header}></View>
-      <FlatList
-        data={data}
-        keyExtractor={(item) => item.eventID.toString()}
-        pagingEnabled
-        showsVerticalScrollIndicator={false}
-        onEndReached={() => setPage(prevPage => prevPage + 1)}
-        onEndReachedThreshold={0.5}
-        renderItem={({ item }) => (
-          <View style={styles.itemContainer}>
-            <Image source={{ uri: item.eventImage.url }} style={styles.image} />
-            <View style={styles.descriptionContainer}>
-              <Text>{item.description}</Text>
-            </View>
-          </View>
-        )}
-      />
-    </View>
-  );
-};
-
- */
 
 const { width, height } = Dimensions.get('window');
 
@@ -301,7 +274,41 @@ const styles = StyleSheet.create({
     color: "white",
     fontWeight: "bold",
     textAlign: "center"
-  }
+  },
+  searchBarContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 10,
+  },
+  searchBar: {
+    flex: 4,  // Adjusted flex to give more space to searchBar
+    height: 40,
+    borderColor: 'gray',
+    borderWidth: 1,
+    borderRadius: 10,
+    margin: 10,
+    paddingLeft: 10,
+  },
+  magnifyingGlass: {
+    position: 'absolute',
+    width: 20,
+    height: 20,
+    top: 20,
+    right: 110,  // Adjusted right position to be near the end of searchBar
+  },
+  createButton: {
+    flex: 1,  // Ensure that this stays 1 to take up remaining space
+    backgroundColor: '#4CAF50',
+    alignItems: 'center',
+    justifyContent: 'center',
+    padding: 10,
+    borderRadius: 5,
+    marginRight: 10,  // Added marginRight for some spacing between button and side
+  },
+  createButtonText: {
+    color: '#fff',
+    fontWeight: 'bold',
+  },
 });
 
 
