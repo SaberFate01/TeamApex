@@ -1,48 +1,130 @@
 import React from 'react';
-import { View, Text, TouchableOpacity, StyleSheet, FlatList } from 'react-native';
+import { View, Text, TouchableOpacity, StyleSheet, FlatList, Image} from 'react-native';
+import { useState, useEffect } from 'react';
+import { TextInput } from 'react-native-gesture-handler';
 import { useNavigation } from '@react-navigation/native';
 import ChatPage from './ChatPage';
 import ChatGPT from './ChatGPT';
 
-const data = [
-  { id: '1', name: 'My family', message: 'William: For fishing!' },
-  { id: '2', name: 'Mr. L Fruit Picking', message: 'Our event is on...' },
-  { id: '3', name: 'Healthy Living care', message: 'Please note on the date of the event...' },
-  { id: '4', name: 'Jetta travel', message: 'The shuttle is arriving at...' },
-  { id: '5', name: 'GPT', message: 'You know who!' }
-];
-
 const HomePage = () => {
+  const [data, setData] = useState([]);
+  const [usernames, setUsernames] = useState({});
   const navigation = useNavigation();
+  const [searchTerm, setSearchTerm] = useState('');
+  const gptData = [{
+    otherID: '3',
+    usernames:'GPT',
+    rows: [{
+      message: 'Chat with GPT!',
+      timestamp: new Date().toISOString(),
+    }]
+  }];
+  const filteredData = data.filter(item => {
+    const username = usernames[item.otherID] || 'Unknown User';
+    return username.toLowerCase().includes(searchTerm.toLowerCase());
+  });
 
-  const handleItemClick = (itemName) => {
-    if (itemName === 'My family') {
-      navigation.navigate('ChatPageGroup'); // Navigate to ChatPageGroup if 'My family' is clicked
-    }else if (itemName === 'GPT') {
-           navigation.navigate('ChatGPT');
-   }
-    else {
-      navigation.navigate('ChatPage'); // Default navigation to ChatPage for other items
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const response = await fetch('https://flask-dot-acoustic-cirrus-396009.ts.r.appspot.com/chat/get', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            userID: 1,
+          }),
+        });
+        const result = await response.json();
+        
+        // Fetch usernames for all otherIDs
+        const otherIDs = result.map(chatData => chatData.otherID);
+        const usernames = await fetchUsernames(otherIDs);
+        
+        // Add GPT to usernames
+        usernames['3'] = 'GPT';
+        
+        setUsernames(usernames);
+        
+        // Merge gptData and fetched data
+        setData([...gptData, ...result]);
+      } catch (error) {
+        console.error("Error fetching chat data:", error);
+      }
+    };
+  
+    fetchData();
+  }, []);
+
+  const fetchUsernames = async (otherIDs) => {
+    try {
+      // Fetch usernames for all otherIDs and return an object mapping otherID to username
+      const usernames = {};
+      for (const otherID of otherIDs) {
+        const response = await fetch('https://flask-dot-acoustic-cirrus-396009.ts.r.appspot.com/database', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            user: 'root',
+            pass: 'root',
+            db_name: 'users',
+            query: `SELECT * FROM userprofiles WHERE userid='${otherID}'`,
+          }),
+        });
+        const result = await response.json();
+        usernames[otherID] = result[0]?.username || 'Unknown User';
+      }
+      return usernames;
+    } catch (error) {
+      console.error("Error fetching usernames:", error);
+      return {};
+    }
+  };
+  const handleItemClick = (item) => {
+    if (item.otherID === 'GPT') {
+      navigation.navigate('ChatGPT', { chatData: item });
+    } else {
+      navigation.navigate('ChatPage', { chatData: item });
     }
   };
 
   return (
     <View style={styles.container}>
+        <TextInput 
+      style={styles.searchBar}
+      placeholder="Search..."
+      value={searchTerm}
+      onChangeText={setSearchTerm}
+    />
+      <Image 
+        source={require('../assets/magnifying_glass.png')}
+        style={styles.magnifyingGlass}
+      />
       <FlatList
         data={data}
-        keyExtractor={(item) => item.id}
-        renderItem={({ item }) => (
+        keyExtractor={(item) => item.otherID.toString()}
+        renderItem={({ item }) => {
+        const username = usernames[item.otherID] || 'Unknown User';
+        const lastMessage = item.rows?.reduce((latest, message) => {
+          return new Date(message.timestamp) > new Date(latest.timestamp) ? message : latest;
+        }, item.rows[0]) || { message: 'No messages' };
+        
+        return (
           <TouchableOpacity 
             style={styles.itemContainer}
-            onPress={() => handleItemClick(item.name)}
+            onPress={() => handleItemClick(item)}
           >
             <View style={styles.logo}></View>
             <View style={styles.textContainer}>
-              <Text style={styles.nameText}>{item.name}</Text>
-              <Text style={styles.messageText}>{item.message}</Text>
+              <Text style={styles.nameText}>{username}</Text>
+              <Text style={styles.messageText}>{lastMessage.message}</Text>
             </View>
           </TouchableOpacity>
-        )}
+        );
+      }}
       />
       <TouchableOpacity style={styles.createButton}>
         <Text style={styles.createButtonText}>Create</Text>
@@ -94,6 +176,21 @@ const styles = StyleSheet.create({
   createButtonText: {
     color: 'white',
     fontSize: 16,
+  },
+  searchBar: {
+    height: 40,
+    borderColor: 'gray',
+    borderWidth: 1,
+    borderRadius: 10,
+    margin: 10,
+    paddingLeft: 10,
+  },
+  magnifyingGlass: {
+    position: 'absolute',
+    width: 20,
+    height: 20,
+    top: 15,
+    right: 25,
   },
 });
 

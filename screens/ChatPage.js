@@ -1,10 +1,12 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { StyleSheet, View, TextInput, Button, ScrollView, Image, Text } from 'react-native';
 
-const ChatPage = () => {
+
+const ChatPage = ({ route, navigation }) => {
   const [input, setInput] = useState('');
   const [messages, setMessages] = useState([]);
-
+  const { chatData } = route.params;
+  console.log(chatData);
   const BOT_MSGS = [
     "Hi, how are you?",
     "Ohh... I can't understand what you trying to say. Sorry!",

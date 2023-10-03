@@ -34,13 +34,14 @@ const AuthScreen = () => {
 
   const onSubmitHandler = async () => {
     try {
-    if (check(email) || check(password) || EmailCheck(email)){
-        throw new Error('Bad credentials');
-    }
       const query = isLogin
         ? `SELECT * FROM userprofiles WHERE email='${email}' AND password='${password}'`
         : `INSERT INTO userprofiles (email, username, password, date_of_birth) VALUES ('${email}', '${name}', '${password}', '${dateOfBirth}')`;
-  
+      if (!isLogin){
+        if (check(email) || check(password) || EmailCheck(email)){
+          throw new Error('Bad credentials');
+      }
+      }
       console.log('SQL Query:', query); // Log the SQL query
   
       const response = await fetch(DATABASE_URL, {
