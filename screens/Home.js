@@ -82,9 +82,6 @@ const Home = () => {
           source={require('../assets/magnifying_glass.png')}
           style={styles.magnifyingGlass}
         />
-        <TouchableOpacity style={styles.createButton}>
-          <Text style={styles.createButtonText}>Create</Text>
-        </TouchableOpacity>
       </View>
 
       <FlatList
@@ -294,7 +291,7 @@ const styles = StyleSheet.create({
     width: 20,
     height: 20,
     top: 20,
-    right: 110,  // Adjusted right position to be near the end of searchBar
+    right: 20,  // Adjusted right position to be near the end of searchBar
   },
   createButton: {
     flex: 1,  // Ensure that this stays 1 to take up remaining space

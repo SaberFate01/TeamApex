@@ -43,7 +43,7 @@ const CustomHeader = ({ navigation }) => {
       </View>
       <View style={styles.headerContainer}>
       <TouchableOpacity onPress={() => navigation.navigate('Home')}>
-      <Text style={styles.buttonText}>Home</Text>
+      <Text style={styles.buttonText}>Events</Text>
       </TouchableOpacity>
       <TouchableOpacity onPress={() => navigation.navigate('Chat')}>
       <Text style={styles.buttonText}>Chat</Text>

@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
 import { View, Text, TextInput, TouchableOpacity, StyleSheet } from 'react-native';
 import { Calendar } from 'react-native-calendars';
+import { useNavigation, useRoute } from '@react-navigation/native';
+
 
 const Create = ({ navigation }) => {
   const [chosenDate, setChosenDate] = useState(new Date());
@@ -13,7 +15,7 @@ const Create = ({ navigation }) => {
 
   const handleCreateActivity = () => {
     // Pass the data to the next screen
-    navigation.navigate('NextScreenName', {
+    navigation.navigate('CreateNext', {
       chosenDate: chosenDate,
       title: title,
       timeFrame: timeFrame,

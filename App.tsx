@@ -35,6 +35,7 @@ import ChatPage from './screens/ChatPage';
 import ChatPageGroup from './screens/ChatPageGroup';
 import ChatGPT from './screens/ChatGPT';
 import { UserProvider } from './userContext';
+import CreateNext from './screens/CreateNext';
 
 
 const Stack = createStackNavigator();
@@ -58,6 +59,7 @@ function App() {
         <Stack.Screen name="ChatPage" component={ChatPage} />
         <Stack.Screen name="ChatGPT" component={ChatGPT} />
         <Stack.Screen name="ChatPageGroup" component={ChatPageGroup}/>
+        <Stack.Screen name="CreateNext" component={CreateNext}/>
       </Stack.Navigator>
     </NavigationContainer>
     </UserProvider>
