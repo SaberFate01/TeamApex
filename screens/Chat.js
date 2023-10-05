@@ -130,12 +130,16 @@ const HomePage = () => {
         );
       }}
       />
-      <TouchableOpacity style={styles.createButton}>
-        <Text style={styles.createButtonText}>Create</Text>
-      </TouchableOpacity>
     </View>
   );
 };
+/**
+ * 
+ * <TouchableOpacity style={styles.createButton}>
+<Text style={styles.createButtonText}>Create</Text>
+</TouchableOpacity>
+ */
+
 const styles = StyleSheet.create({
   container: {
     flex: 1,
