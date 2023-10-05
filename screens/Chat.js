@@ -13,6 +13,7 @@ const HomePage = () => {
   const navigation = useNavigation();
   const [searchTerm, setSearchTerm] = useState('');
   const { user } = useContext(UserContext);
+  const [groupData, setGroupData] = useState([]);
 
   const gptData = [{
     otherID: '3',
@@ -58,6 +59,27 @@ const HomePage = () => {
     };
   
     fetchData();
+
+    const fetchGroupData = async () => {
+      try {
+        const response = await fetch('https://flask-dot-acoustic-cirrus-396009.ts.r.appspot.com/group_chat/get', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            userID: user.userid,
+          }),
+        });
+        const result = await response.json();
+        setGroupData(result.inter_chat);
+      } catch (error) {
+        console.error("Error fetching group chat data:", error);
+      }
+    };
+
+    fetchGroupData();
+
   }, []);
 
   const fetchUsernames = async (otherIDs) => {
@@ -94,41 +116,63 @@ const HomePage = () => {
       navigation.navigate('ChatPage', { chatData: item, username: username });
     }
   };
+  const handleGroupChatClick = (chatRoom) => {
+    navigation.navigate('ChatGroup', { chatRoom, userID: user.userid });
+  };
 
   return (
     <View style={styles.container}>
-        <TextInput 
-      style={styles.searchBar}
-      placeholder="Search..."
-      value={searchTerm}
-      onChangeText={setSearchTerm}
-    />
+      <TextInput 
+        style={styles.searchBar}
+        placeholder="Search..."
+        value={searchTerm}
+        onChangeText={setSearchTerm}
+      />
       <Image 
         source={require('../assets/magnifying_glass.png')}
         style={styles.magnifyingGlass}
       />
       <FlatList
-        data={data}
-        keyExtractor={(item) => item.otherID.toString()}
+        data={[...data, ...groupData]}
+        keyExtractor={(item) => item.otherID || item.chatRoom.toString()}
         renderItem={({ item }) => {
-        const username = usernames[item.otherID] || 'Unknown User';
-        const lastMessage = item.rows?.reduce((latest, message) => {
-          return new Date(message.timestamp) > new Date(latest.timestamp) ? message : latest;
-        }, item.rows[0]) || { message: 'No messages' };
-        
-        return (
-          <TouchableOpacity 
-            style={styles.itemContainer}
-            onPress={() => handleItemClick(item)}
-          >
-            <View style={styles.logo}></View>
-            <View style={styles.textContainer}>
-              <Text style={styles.nameText}>{username}</Text>
-              <Text style={styles.messageText}>{lastMessage.message}</Text>
-            </View>
-          </TouchableOpacity>
-        );
-      }}
+          if (item.otherID) {
+            // Render personal chat
+            const username = usernames[item.otherID] || 'Unknown User';
+            const lastMessage = item.rows?.reduce((latest, message) => {
+              return new Date(message.timestamp) > new Date(latest.timestamp) ? message : latest;
+            }, item.rows[0]) || { message: 'No messages' };
+            return (
+              <TouchableOpacity 
+                style={styles.itemContainer}
+                onPress={() => handlePersonalChatClick(item)}
+              >
+                <View style={styles.logo}></View>
+                <View style={styles.textContainer}>
+                  <Text style={styles.nameText}>{username}</Text>
+                  <Text style={styles.messageText}>{lastMessage.message}</Text>
+                </View>
+              </TouchableOpacity>
+            );
+          } else {
+            // Render group chat
+            const lastMessage = item.rows?.reduce((latest, message) => {
+              return new Date(message.timestamp) > new Date(latest.timestamp) ? message : latest;
+            }, item.rows[0]) || { message: 'No messages' };
+            return (
+              <TouchableOpacity 
+                style={styles.itemContainer}
+                onPress={() => handleGroupChatClick(item.chatRoom)}
+              >
+                <View style={styles.logo}></View>
+                <View style={styles.textContainer}>
+                  <Text style={styles.nameText}>{lastMessage.chatName}</Text>
+                  <Text style={styles.messageText}>{lastMessage.message}</Text>
+                </View>
+              </TouchableOpacity>
+            );
+          }
+        }}
       />
     </View>
   );
