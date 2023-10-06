@@ -108,7 +108,7 @@ const HomePage = () => {
       return {};
     }
   };
-  const handleItemClick = (item) => {
+  const handlePersonalChatClick = (item) => {
     const username = usernames[item.otherID] || 'Unknown User';
     if (item.otherID === '3') {
       navigation.navigate('ChatGPT', { chatData: item });
