@@ -1,5 +1,5 @@
 import React, {useContext, useState} from 'react';
-import {View, Text, TouchableOpacity, StyleSheet, Button} from 'react-native';
+import {View, Text, TouchableOpacity, StyleSheet, Button, Image} from 'react-native';
 import {UserContext} from '../userContext';
 import {Modal} from 'react-native';
 
@@ -131,11 +131,15 @@ const Profile = () => {
       )}
 
       <View style={styles.adviceSection}>
-        <Text>Well-Being Advice</Text>
+        <Text style={styles.boldText}>Well-Being Advice</Text>
+        <Image 
+          source={require('../assets/low_social.png')} 
+          style={styles.adviceImage}
+          resizeMode="contain"
+        />
+        <Text style={styles.adviceHeader}>Low Social</Text>
         <Text numberOfLines={5}>
-          Lorem ipsum dolor sit amet, consectetur adipiscing elit. Quisque nisl
-          eros, pulvinar facilisis justo mollis, auctor consequat urna. Morbi a
-          bibendum metus...
+          Engaging in social activities can enhance your mood and overall well-being. Consider joining a local club or online group that shares your interests. Regular interactions with friends and family, even through virtual means, can also uplift your spirits and keep you connected.
         </Text>
       </View>
 
@@ -183,11 +187,17 @@ const styles = StyleSheet.create({
     marginTop: 20,
     padding: 10,
     backgroundColor: '#f2f2f2',
+    alignItems: 'center', // Center the items horizontally
   },
-  activitySection: {
-    marginTop: 20,
-    padding: 10,
-    backgroundColor: '#f2f2f2',
+  adviceImage: {
+    width: '100%', // 80% of the screen width
+    height: undefined,
+    aspectRatio: 1164 / 304, // Keep your image aspect ratio
+  },
+  adviceHeader: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    marginTop: 10,
   },
   boldText: {
     fontWeight: 'bold',
