@@ -1,5 +1,5 @@
 // screens/Home.js
-import React , {useContext} from 'react';
+import React, {useContext} from 'react';
 import {useNavigation} from '@react-navigation/native';
 import {
   View,
@@ -27,7 +27,7 @@ const Home = () => {
   const [fetchedEventIDs, setFetchedEventIDs] = useState([]);
   const [searchTerm, setSearchTerm] = useState('');
   const [filteredData, setFilteredData] = useState([]);
-  const navigation = useNavigation(); 
+  const navigation = useNavigation();
 
   useEffect(() => {
     const fetchData = async () => {
@@ -179,21 +179,23 @@ const Home = () => {
                 <View style={styles.row4}>
                   <TouchableOpacity
                     style={[styles.button, styles.joinButton]}
-                    onPress={() =>
+                    onPress={() => {
+                      setModalVisible(false); // Close the modal
                       navigation.navigate('Profile', {
                         screen: 'Profile',
                         params: {event: selectedEvent},
-                      })
-                    }>
+                      });
+                    }}>
                     <Text style={styles.buttonText}>Join</Text>
                   </TouchableOpacity>
                   <TouchableOpacity
                     style={[styles.button, styles.shareButton]}
-                    onPress={() =>
+                    onPress={() => {
+                      setModalVisible(false); // Close the modal
                       navigation.navigate('Chat', {
                         eventId: selectedEvent.eventID,
-                      })
-                    }>
+                      });
+                    }}>
                     <Text style={styles.buttonText}>Share</Text>
                   </TouchableOpacity>
                 </View>
@@ -370,7 +372,7 @@ const styles = StyleSheet.create({
   modalTitle: {
     fontWeight: 'bold',
     marginBottom: 10,
-    textAlign: 'left',  // Align text to the left
+    textAlign: 'left', // Align text to the left
   },
   closeButton: {
     position: 'absolute',
