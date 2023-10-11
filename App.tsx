@@ -51,7 +51,7 @@ function App() {
         }}
       >
         <Stack.Screen name="Auth" component={AuthScreen} 
-        options={{headerShown:true }}/>
+        options={{headerShown:false }}/>
         <Stack.Screen name="Home" component={Home} />
         <Stack.Screen name="Chat" component={Chat} />
         <Stack.Screen name="Create" component={Create} />
