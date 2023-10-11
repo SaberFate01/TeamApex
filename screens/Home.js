@@ -1,7 +1,6 @@
 // screens/Home.js
-import React from 'react';
-//import { View, Button, StyleSheet, Dimensions } from 'react-native';
-//import { View, Button, StyleSheet, ScrollView, Dimensions } from 'react-native';
+import React , {useContext} from 'react';
+import {useNavigation} from '@react-navigation/native';
 import {
   View,
   Text,
@@ -14,7 +13,7 @@ import {
   Button,
   Modal,
 } from 'react-native';
-import { ActivityIndicator } from 'react-native';
+import {ActivityIndicator} from 'react-native';
 import {useState, useEffect} from 'react';
 import {TextInput} from 'react-native-gesture-handler';
 //import logo from '../data/Image';
@@ -28,6 +27,7 @@ const Home = () => {
   const [fetchedEventIDs, setFetchedEventIDs] = useState([]);
   const [searchTerm, setSearchTerm] = useState('');
   const [filteredData, setFilteredData] = useState([]);
+  const navigation = useNavigation(); 
 
   useEffect(() => {
     const fetchData = async () => {
@@ -138,7 +138,9 @@ const Home = () => {
           animationType="slide"
           transparent={true}
           visible={modalVisible}
-          onRequestClose={hideModal}>
+          onRequestClose={hideModal}
+          style={styles.modal} // Ensure the modal itself has styles to take full width
+        >
           <View style={styles.centeredView}>
             <View style={styles.modalView}>
               <TouchableOpacity
@@ -147,21 +149,54 @@ const Home = () => {
                 <Text style={styles.closeButtonText}>X</Text>
               </TouchableOpacity>
               <ScrollView showsVerticalScrollIndicator={false}>
-                <Text style={styles.modalTitle}>Title</Text>
-                <Text>{selectedEvent.title}</Text>
-                <Text style={styles.modalTitle}>Description</Text>
-                <Text>{selectedEvent.description}</Text>
-                <Text style={styles.modalTitle}>Cost</Text>
-                <Text>{selectedEvent.cost}</Text>
-                <Text style={styles.modalTitle}>Age</Text>
-                <Text>{selectedEvent.age}</Text>
-                <Text style={styles.modalTitle}>Location</Text>
-                <Text>{selectedEvent.location}</Text>
-                <Text style={styles.modalTitle}>Start Date & Time</Text>
-                <Text>{selectedEvent.startDateTime}</Text>
-                <Text style={styles.modalTitle}>End Date & Time</Text>
-                <Text>{selectedEvent.endDateTime}</Text>
-                {/* ... other fields */}
+                <View style={styles.row1}>
+                  <Image
+                    source={{uri: selectedEvent.eventImage}}
+                    style={styles.rowImage}
+                  />
+                  <Text style={styles.modalTitle}>{selectedEvent.title}</Text>
+                </View>
+                <View style={styles.row2}>
+                  <Text>{selectedEvent.description}</Text>
+                </View>
+                <View style={styles.row3}>
+                  <Text style={styles.modalTitle}>
+                    Cost: {selectedEvent.cost}
+                  </Text>
+                  <Text style={styles.modalTitle}>
+                    Age: {selectedEvent.age}
+                  </Text>
+                  <Text style={styles.modalTitle}>
+                    Location: {selectedEvent.location}
+                  </Text>
+                  <Text style={styles.modalTitle}>
+                    Start Date: {selectedEvent.startDateTime}
+                  </Text>
+                  <Text style={styles.modalTitle}>
+                    End Date: {selectedEvent.endDateTime}
+                  </Text>
+                </View>
+                <View style={styles.row4}>
+                  <TouchableOpacity
+                    style={[styles.button, styles.joinButton]}
+                    onPress={() =>
+                      navigation.navigate('Profile', {
+                        screen: 'Profile',
+                        params: {event: selectedEvent},
+                      })
+                    }>
+                    <Text style={styles.buttonText}>Join</Text>
+                  </TouchableOpacity>
+                  <TouchableOpacity
+                    style={[styles.button, styles.shareButton]}
+                    onPress={() =>
+                      navigation.navigate('Chat', {
+                        eventId: selectedEvent.eventID,
+                      })
+                    }>
+                    <Text style={styles.buttonText}>Share</Text>
+                  </TouchableOpacity>
+                </View>
               </ScrollView>
             </View>
           </View>
@@ -229,12 +264,14 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     marginTop: 10,
   },
+  modal: {
+    margin: 0, // Ensure there's no margin
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
   modalContent: {
+    width: '100%', // Ensure the content takes the full width
     backgroundColor: 'white',
-    padding: 20,
-    borderRadius: 15,
-    width: '80%',
-    alignItems: 'flex-start',
   },
   closeButton: {
     marginTop: 20,
@@ -249,11 +286,12 @@ const styles = StyleSheet.create({
     backgroundColor: 'rgba(0,0,0,0.5)', // semi-transparent background
   },
   modalView: {
-    width: '80%',
-    margin: 20,
+    width: '100%', // Ensure this takes the full width
     backgroundColor: 'white',
-    borderRadius: 20,
-    padding: 35,
+    // Remove or adjust the following properties that might be causing white space:
+    // margin: 20,
+    // borderRadius: 20,
+    //]] padding: 35,
     alignItems: 'center',
     shadowColor: '#000',
     shadowOffset: {
@@ -263,6 +301,56 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.25,
     shadowRadius: 4,
     elevation: 5,
+  },
+  row1: {
+    backgroundColor: '#e6f7ff',
+    alignItems: 'center',
+    padding: 10,
+    width: '100%',
+  },
+  row2: {
+    backgroundColor: '#f2f2f2',
+    padding: 10,
+    width: '100%',
+  },
+  row3: {
+    backgroundColor: '#e6ffe6',
+    padding: 10,
+    width: '100%',
+  },
+  rowImage: {
+    width: '100%',
+    height: 200, // Adjusted height
+    resizeMode: 'cover',
+  },
+  row4: {
+    backgroundColor: '#fff2e6',
+    alignItems: 'center', // Center the buttons horizontally
+    padding: 10,
+    flexDirection: 'row',
+    width: '100%',
+  },
+  button: {
+    flex: 1, // Add flex to adjust width according to available space
+    paddingVertical: 10,
+    width: 100,
+    paddingHorizontal: 10, // Reduce horizontal padding if needed
+    borderRadius: 5,
+    marginVertical: 5,
+    justifyContent: 'center', // Center text horizontally
+    alignItems: 'center', // Center text vertically
+  },
+  joinButton: {
+    backgroundColor: 'red',
+    marginRight: 5, // Adjust spacing between buttons
+  },
+  shareButton: {
+    backgroundColor: 'red',
+    marginLeft: 5, // Adjust spacing between buttons
+  },
+  buttonText: {
+    color: 'white',
+    fontWeight: 'bold',
   },
   modalText: {
     marginBottom: 15,
@@ -282,7 +370,7 @@ const styles = StyleSheet.create({
   modalTitle: {
     fontWeight: 'bold',
     marginBottom: 10,
-    textAlign: 'center',
+    textAlign: 'left',  // Align text to the left
   },
   closeButton: {
     position: 'absolute',
