@@ -28,6 +28,7 @@ const Home = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [filteredData, setFilteredData] = useState([]);
   const navigation = useNavigation();
+  const [hasJoined, setHasJoined] = useState(false);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -180,13 +181,16 @@ const Home = () => {
                   <TouchableOpacity
                     style={[styles.button, styles.joinButton]}
                     onPress={() => {
-                      setModalVisible(false); // Close the modal
-                      navigation.navigate('Profile', {
-                        screen: 'Profile',
-                        params: {event: selectedEvent},
-                      });
+                      if (!hasJoined) {
+                        // If user has not joined, navigate and close modal as before
+                        setModalVisible(false);
+                      }
+                      // Toggle the hasJoined state regardless
+                      setHasJoined(!hasJoined);
                     }}>
-                    <Text style={styles.buttonText}>Join</Text>
+                    <Text style={styles.buttonText}>
+                      {hasJoined ? 'Unjoin' : 'Join'}
+                    </Text>
                   </TouchableOpacity>
                   <TouchableOpacity
                     style={[styles.button, styles.shareButton]}

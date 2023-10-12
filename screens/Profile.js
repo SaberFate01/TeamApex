@@ -1,7 +1,17 @@
 import React, {useContext, useState} from 'react';
-import {View, Text, TouchableOpacity, StyleSheet, Button, Image} from 'react-native';
+import {
+  View,
+  Text,
+  TouchableOpacity,
+  StyleSheet,
+  Button,
+  Image,
+  ScrollView,
+} from 'react-native';
 import {UserContext} from '../userContext';
 import {Modal} from 'react-native';
+import chart from '../assets/chart.png';
+import PieChart from 'react-native-pie-chart';
 
 const questions = [
   'How are you feeling today?',
@@ -23,11 +33,11 @@ const Profile = () => {
       setCurrentQuestionIndex(prev => prev + 1);
     }
   };
-  
+
   const handleSubmit = async answer => {
     // Ensure we only have answers for the 5 questions
     const finalAnswers = [...answers, answer].slice(0, questions.length);
-    
+
     // Construct the data to be sent to the API
     const data = {
       userid: user.userid,
@@ -37,7 +47,7 @@ const Profile = () => {
         {},
       ),
     };
-  
+
     // Send answers to API
     try {
       console.log(data);
@@ -51,7 +61,7 @@ const Profile = () => {
           body: JSON.stringify(data),
         },
       );
-  
+
       // Handle response...
       if (response.ok) {
         console.log('Submission successful!');
@@ -61,108 +71,151 @@ const Profile = () => {
     } catch (error) {
       console.error('Error submitting answers:', error);
     }
-  
+
     // Reset and close modal
     setAnswers([]);
     setCurrentQuestionIndex(0);
     setIsModalVisible(false);
   };
+  const chartSeries = [10, 5, 3]; // YunFei, Joel, ChatGPT
+  const sliceColor = ['#F00', '#0F0', '#00F']; // Colors for each section
 
   return (
-    <View style={styles.container}>
-      <View style={styles.header}>
-        <View style={styles.circle}></View>
-        <Text style={styles.name}>{user.username}</Text>
-        <TouchableOpacity style={styles.editButton}>
-          <Text>Edit</Text>
-        </TouchableOpacity>
-        <TouchableOpacity
-          style={styles.checkInButton}
-          onPress={() => setIsModalVisible(true)}>
-          <Text>Check In</Text>
-        </TouchableOpacity>
-      </View>
-      {isModalVisible && (
-        <Modal
-          animationType="slide"
-          transparent={true}
-          visible={isModalVisible}
-          onRequestClose={() => setIsModalVisible(false)}>
-          <View style={styles.centeredView}>
-            <View style={styles.modalView}>
-              <TouchableOpacity
-                style={styles.closeButton}
-                onPress={() => setIsModalVisible(false)}>
-                <Text style={styles.closeText}>X</Text>
-              </TouchableOpacity>
-              <Text style={styles.questionText}>
-                <Text style={styles.boldText}>
-                  {currentQuestionIndex + 1}.{' '}
+    <ScrollView contentContainerStyle={{flexGrow: 1, paddingHorizontal: 0}}>
+      <View style={styles.container}>
+        <View style={styles.header}>
+          <View style={styles.circle}></View>
+          <Text style={styles.name}>{user.username}</Text>
+          <TouchableOpacity style={styles.editButton}>
+            <Text>Edit</Text>
+          </TouchableOpacity>
+          <TouchableOpacity
+            style={styles.checkInButton}
+            onPress={() => setIsModalVisible(true)}>
+            <Text>Check In</Text>
+          </TouchableOpacity>
+        </View>
+        {isModalVisible && (
+          <Modal
+            animationType="slide"
+            transparent={true}
+            visible={isModalVisible}
+            onRequestClose={() => setIsModalVisible(false)}>
+            <View style={styles.centeredView}>
+              <View style={styles.modalView}>
+                <TouchableOpacity
+                  style={styles.closeButton}
+                  onPress={() => setIsModalVisible(false)}>
+                  <Text style={styles.closeText}>X</Text>
+                </TouchableOpacity>
+                <Text style={styles.questionText}>
+                  <Text style={styles.boldText}>
+                    {currentQuestionIndex + 1}.{' '}
+                  </Text>
+                  {questions[currentQuestionIndex]}
                 </Text>
-                {questions[currentQuestionIndex]}
-              </Text>
-              {/* Radio Buttons */}
-              <View style={styles.radioContainer}>
-                {[1, 2, 3, 4, 5].map(num => (
+                {/* Radio Buttons */}
+                <View style={styles.radioContainer}>
+                  {[1, 2, 3, 4, 5].map(num => (
+                    <TouchableOpacity
+                      key={num}
+                      style={styles.radioOption}
+                      onPress={() => handleNext(num)}>
+                      <Text>{num}</Text>
+                    </TouchableOpacity>
+                  ))}
+                </View>
+                {currentQuestionIndex < questions.length - 1 ? (
                   <TouchableOpacity
-                    key={num}
-                    style={styles.radioOption}
-                    onPress={() => handleNext(num)}>
-                    <Text>{num}</Text>
+                    style={styles.button}
+                    onPress={() => handleNext(0)}>
+                    <Text style={styles.buttonText}>Next</Text>
                   </TouchableOpacity>
-                ))}
+                ) : (
+                  <TouchableOpacity
+                    style={styles.button}
+                    onPress={() => handleSubmit(0)}>
+                    <Text style={styles.buttonText}>Submit</Text>
+                  </TouchableOpacity>
+                )}
               </View>
-              {currentQuestionIndex < questions.length - 1 ? (
-                <TouchableOpacity
-                  style={styles.button}
-                  onPress={() => handleNext(0)}>
-                  <Text style={styles.buttonText}>Next</Text>
-                </TouchableOpacity>
-              ) : (
-                <TouchableOpacity
-                  style={styles.button}
-                  onPress={() => handleSubmit(0)}>
-                  <Text style={styles.buttonText}>Submit</Text>
-                </TouchableOpacity>
-              )}
+            </View>
+          </Modal>
+        )}
+
+        <View style={styles.adviceSection}>
+          <Text style={styles.boldText}>Well-Being Advice</Text>
+          <Image
+            source={require('../assets/low_social.png')}
+            style={styles.adviceImage}
+            resizeMode="contain"
+          />
+          <Text style={styles.adviceHeader}>Low Social</Text>
+          <Text numberOfLines={5}>
+            Engaging in social activities can enhance your mood and overall
+            well-being. Consider joining a local club or online group that
+            shares your interests. Regular interactions with friends and family,
+            even through virtual means, can also uplift your spirits and keep
+            you connected.
+          </Text>
+        </View>
+        <View style={styles.barchartSection}>
+          <Text style={styles.boldText}>Average Activity</Text>
+          <View style={styles.chartContainer}>
+            <Image
+              source={require('../assets/chart.png')}
+              style={styles.chartImage}
+              resizeMode="contain"
+            />
+            <Text style={styles.chartText}>1.3</Text>
+          </View>
+        </View>
+        <View style={styles.activitySection}>
+          <Text style={styles.boldText}>Activity/Month</Text>
+          <Text>October: 8</Text>
+          <View style={styles.redBar}></View>
+          <Text>September: 5</Text>
+          <View style={styles.yellowBar}>
+            <View style={styles.halfFill}></View>
+          </View>
+          <Text style={styles.boldText}>
+            Total Activities Joined This Month
+          </Text>
+          <Text style={styles.greenText}>8 Activity</Text>
+        </View>
+
+        <View style={styles.chartSection}>
+          <Text style={styles.boldText}>Most contacted person this month</Text>
+          <View style={styles.chartAndLegend}>
+            <PieChart
+              widthAndHeight={200} // or another size you want
+              series={chartSeries}
+              sliceColor={sliceColor}
+              doughnut={true}
+              coverRadius={0.45}
+              coverFill={'#FFF'}
+            />
+            <View style={styles.legend}>
+              {['YunFei', 'Joel', 'ChatGPT'].map((name, index) => (
+                <View style={styles.legendItem} key={name}>
+                  <View style={[styles.colorBox, {backgroundColor: sliceColor[index]}]} />
+                  <Text>{name}: {chartSeries[index]}</Text>
+                </View>
+              ))}
             </View>
           </View>
-        </Modal>
-      )}
-
-      <View style={styles.adviceSection}>
-        <Text style={styles.boldText}>Well-Being Advice</Text>
-        <Image 
-          source={require('../assets/low_social.png')} 
-          style={styles.adviceImage}
-          resizeMode="contain"
-        />
-        <Text style={styles.adviceHeader}>Low Social</Text>
-        <Text numberOfLines={5}>
-          Engaging in social activities can enhance your mood and overall well-being. Consider joining a local club or online group that shares your interests. Regular interactions with friends and family, even through virtual means, can also uplift your spirits and keep you connected.
-        </Text>
-      </View>
-
-      <View style={styles.activitySection}>
-        <Text style={styles.boldText}>Activity/Month</Text>
-        <Text>August: 8</Text>
-        <View style={styles.redBar}></View>
-        <Text>July: 6</Text>
-        <View style={styles.yellowBar}>
-          <View style={styles.halfFill}></View>
         </View>
-        <Text style={styles.boldText}>Total Activities Per Week</Text>
-        <Text style={styles.greenText}>1.3 Activity</Text>
       </View>
-    </View>
+    </ScrollView>
   );
 };
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    padding: 20,
+    padding: 15,
     backgroundColor: 'white',
+    width: '100%',
   },
   header: {
     flexDirection: 'row',
@@ -298,6 +351,63 @@ const styles = StyleSheet.create({
     color: 'white',
     fontWeight: 'bold',
     textAlign: 'center',
+  },
+  barchartSection: {
+    alignItems: 'center',
+    marginBottom: 20,
+  },
+  chartContainer: {
+    position: 'relative',
+    width: '90%',
+    height: 200, // Adjust the height as per your requirement
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  chartImage: {
+    width: '100%',
+    height: '100%',
+  },
+  chartText: {
+    position: 'absolute',
+    color: 'black',
+    fontSize: 18,
+    fontWeight: 'bold',
+    top: 102, // Adjust as per your requirement
+    left: 45, // Adjust as per your requirement
+  },
+  boldText: {
+    fontWeight: 'bold',
+    fontSize: 18,
+    marginBottom: 10,
+  },
+  chartSection: {
+    alignItems: 'center',
+    marginBottom: 20,
+    backgroundColor: '#f5f3f2',
+    marginTop:'50',
+  },
+  boldText: {
+    fontWeight: 'bold',
+    fontSize: 18,
+    marginBottom: 10,
+  },
+  chartAndLegend: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginTop:'50',
+  },
+  legend: {
+    marginLeft: 20,
+  },
+  legendItem: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 5,
+  },
+  colorBox: {
+    width: 20,
+    height: 20,
+    marginRight: 5,
   },
 });
 
