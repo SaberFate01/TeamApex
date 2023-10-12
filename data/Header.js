@@ -1,12 +1,31 @@
 import React, { useState } from 'react';
-import { View, Text, TouchableOpacity, StyleSheet, Image, Modal, Linking } from 'react-native';
+import { View, Text, TouchableOpacity, Image, Modal, StyleSheet, Linking } from 'react-native';
+import { useNavigation, useNavigationState } from '@react-navigation/native';
 import logo from '../assets/logo.jpg';
 
-const CustomHeader = ({ navigation }) => {
+const CustomHeader = () => {
   const [showModal, setShowModal] = useState(false);
+  const navigation = useNavigation();
+  const state = useNavigationState(state => state);
 
   const handleEmergencyCall = () => {
     Linking.openURL('tel:999');
+  };
+
+  const isRouteActive = (routeName) => {
+    return state.routes[state.index].name === routeName;
+  };
+
+  const renderTab = (routeName, label) => {
+    return (
+      <TouchableOpacity 
+        onPress={() => navigation.navigate(routeName)}
+        style={styles.tab}
+      >
+        <Text style={styles.buttonText}>{label}</Text>
+        {isRouteActive(routeName) && <View style={styles.activeTabIndicator} />}
+      </TouchableOpacity>
+    );
   };
 
   return (
@@ -41,19 +60,12 @@ const CustomHeader = ({ navigation }) => {
           <Text style={styles.exclamationText}>!</Text>
         </TouchableOpacity>
       </View>
+
       <View style={styles.headerContainer}>
-      <TouchableOpacity onPress={() => navigation.navigate('Home')}>
-      <Text style={styles.buttonText}>Events</Text>
-      </TouchableOpacity>
-      <TouchableOpacity onPress={() => navigation.navigate('Chat')}>
-      <Text style={styles.buttonText}>Chat</Text>
-      </TouchableOpacity>
-      <TouchableOpacity onPress={() => navigation.navigate('Create')}>
-      <Text style={styles.buttonText}>Create</Text>
-      </TouchableOpacity>
-      <TouchableOpacity onPress={() => navigation.navigate('Profile')}>
-      <Text style={styles.buttonText}>Profile</Text>
-      </TouchableOpacity>
+        {renderTab('Home', 'Events')}
+        {renderTab('Chat', 'Chat')}
+        {renderTab('Create', 'Create')}
+        {renderTab('Profile', 'Profile')}
       </View>
     </View>
   );
@@ -73,6 +85,16 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-around',
     marginTop: 10,
+  },
+  tab: {
+    alignItems: 'center',
+  },
+  activeTabIndicator: {
+    height: 2,
+    width: '100%',
+    backgroundColor: 'red',
+    position: 'absolute',
+    bottom: 0,
   },
   exclamationButton: {
     width: 50,
