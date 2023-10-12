@@ -238,7 +238,7 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
   },
   image: {
-    width: width, // full width
+    width: '100%', // full width
     height: height / 4, // one-quarter of the phone's height
     resizeMode: 'cover',
   },

@@ -9,18 +9,20 @@ import {
 } from 'react-native';
 import {useState, useEffect} from 'react';
 import {TextInput} from 'react-native-gesture-handler';
-import {useNavigation} from '@react-navigation/native';
+import {useNavigation, useRoute} from '@react-navigation/native';
 import ChatPage from './ChatPage';
 import ChatGPT from './ChatGPT';
 import {UserContext} from '../userContext';
 
 const HomePage = () => {
+  const route = useRoute();
   const [data, setData] = useState([]);
   const [usernames, setUsernames] = useState({});
   const navigation = useNavigation();
   const [searchTerm, setSearchTerm] = useState('');
   const {user} = useContext(UserContext);
   const [groupData, setGroupData] = useState([]);
+  const eventId = route.params?.eventId;
 
   const gptData = [
     {
@@ -40,6 +42,9 @@ const HomePage = () => {
   });
 
   useEffect(() => {
+    if (eventId != null) {
+      console.log('Event id test:', eventId);
+    }
     const fetchData = async () => {
       try {
         const response = await fetch(
@@ -132,15 +137,25 @@ const HomePage = () => {
     if (item.otherID === '3') {
       navigation.navigate('ChatGPT', {chatData: item});
     } else {
-      navigation.navigate('ChatPage', {chatData: item, username: username});
+      navigation.navigate('ChatPage', {
+        chatData: item,
+        username: username,
+        eventId,
+      });
     }
   };
   const handleGroupChatClick = chatRoom => {
-    console.log({chatRoom, userID: user.userid, username: user.username});
+    console.log({
+      chatRoom,
+      userID: user.userid,
+      username: user.username,
+      eventId,
+    });
     navigation.navigate('ChatPageGroup', {
       chatRoom,
       userID: user.userid,
       username: user.username,
+      eventId,
     });
   };
 
