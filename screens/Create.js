@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, Text, TextInput, TouchableOpacity, StyleSheet } from 'react-native';
+import { View, Text, TextInput, TouchableOpacity, StyleSheet, Alert } from 'react-native';
 import { Calendar } from 'react-native-calendars';
 import { useNavigation, useRoute } from '@react-navigation/native';
 
@@ -13,12 +13,39 @@ const Create = ({ navigation }) => {
     setChosenDate(new Date(day.timestamp));
   };
 
+  const isValidTime = (timeStr) => {
+    const regex = /^([0-1]?[0-9]|2[0-3]):[0-5][0-9]:[0-5][0-9]$/;
+    return regex.test(timeStr);
+  };
+  const formatDateTime = (dateObj) => {
+    const y = dateObj.getFullYear();
+    const m = String(dateObj.getMonth() + 1).padStart(2, '0');
+    const d = String(dateObj.getDate()).padStart(2, '0');
+    const h = String(dateObj.getHours()).padStart(2, '0');
+    const min = String(dateObj.getMinutes()).padStart(2, '0');
+    const s = String(dateObj.getSeconds()).padStart(2, '0');
+    return `${y}-${m}-${d} ${h}:${min}:${s}`;
+  };
+
   const handleCreateActivity = () => {
+    const formattedChosenDate = formatDateTime(chosenDate);
     // Pass the data to the next screen
-    navigation.navigate('CreateNext', {
-      chosenDate: chosenDate,
+    const timeFrameDateObj = new Date(timeFrame);
+    if (isNaN(timeFrameDateObj)) {
+      // Inform the user that the timeFrame format is invalid
+      Alert.alert("Invalid Date Format", "Please enter a valid date in 2023-10-07 10:00:00 format.");
+      return;
+    }
+    const formattedTimeFrame = formatDateTime(timeFrameDateObj);
+    console.log({
+      chosenDate: formattedChosenDate,
       title: title,
-      timeFrame: timeFrame,
+      timeFrame: formattedTimeFrame,
+    });
+    navigation.navigate('CreateNext', {
+      chosenDate: formattedChosenDate,
+      title: title,
+      timeFrame: formattedTimeFrame,
     });
   };
 
@@ -37,7 +64,7 @@ const Create = ({ navigation }) => {
         style={styles.input}
       />
       <TextInput
-        placeholder="Time Frame"
+        placeholder="Start Time Frame"
         value={timeFrame}
         onChangeText={setTimeFrame}
         style={styles.input}
