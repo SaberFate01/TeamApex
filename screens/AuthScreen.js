@@ -184,7 +184,7 @@ const AuthScreen = () => {
               {message ? getMessage() : null}
             </Text>
             <TouchableOpacity style={styles.button} onPress={onSubmitHandler}>
-              <Text style={styles.buttonText}>Log in</Text>
+              <Text style={styles.buttonText}>Submit</Text>
             </TouchableOpacity>
             <TouchableOpacity
               style={styles.buttonAlt}

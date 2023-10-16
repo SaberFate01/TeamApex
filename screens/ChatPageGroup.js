@@ -23,6 +23,7 @@ const ChatPageGroup = ({route, navigation}) => {
   const [eventData, setEventData] = useState(null);
   const [modalVisible, setModalVisible] = useState(false);
   //console.log(chatRoom,userID,username);
+  console.log(eventData);
 
   useEffect(() => {
     // Fetch initial messages
@@ -85,7 +86,7 @@ const ChatPageGroup = ({route, navigation}) => {
             timestamp: formatTimestamp(new Date()),
             message: input,
             type: "event", // Ensure this is correct for your use case
-            EventId: 1001, // Ensure this is correct for your use case
+            EventId: eventData, // Ensure this is correct for your use case
           },
           {
             headers: {

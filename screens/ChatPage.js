@@ -14,6 +14,7 @@ import {
 import {UserContext} from '../userContext';
 import axios from 'axios';
 import {event} from 'webix';
+import { format } from 'mysql2';
 
 const ChatPage = ({route, navigation}) => {
   const [input, setInput] = useState('');
@@ -23,6 +24,7 @@ const ChatPage = ({route, navigation}) => {
   const eventId = route.params?.eventId;
   const [eventData, setEventData] = useState(null);
   const [modalVisible, setModalVisible] = useState(false);
+
 
   useEffect(() => {
     const fetchEvent = async () => {
@@ -45,7 +47,6 @@ const ChatPage = ({route, navigation}) => {
 
   useEffect(() => {
     if (eventId) {
-      // Automatically send a message about the shared event
       handleSubmit('An event has been shared.', eventId);
     }
     // Fetch initial messages
@@ -88,9 +89,11 @@ const ChatPage = ({route, navigation}) => {
     return `${yyyy}/${mm}/${dd} ${hh}:${min}:${sec}`;
   };
 
-  const handleSubmit = async (messageText = input, eventID = null) => {
+  const handleSubmit = async (messageText, eventID) => {
     if (messageText) {
       try {
+        console.log(messageText, eventID);
+        console.log(user.userid,chatData.otherID,formatTimestamp(new Date()));
         await axios.post(
           'https://flask-dot-acoustic-cirrus-396009.ts.r.appspot.com/chat/send',
           {
@@ -192,9 +195,11 @@ const ChatPage = ({route, navigation}) => {
           style={styles.input}
           placeholder="Enter your message..."
           value={input}
-          onChangeText={setInput}
+          onChangeText={(text) => setInput(text)}
         />
-        <Button title="Send" onPress={handleSubmit} />
+        {/**console.log(input)*/}
+        <Button title="Send" onPress={() => handleSubmit(input, eventId)} />
+
       </View>
       {eventData && modalVisible && (
         <Modal

@@ -57,7 +57,7 @@ const CustomHeader = () => {
           style={styles.exclamationButton}
           onPress={() => setShowModal(true)}
         >
-          <Text style={styles.exclamationText}>!</Text>
+          <Text style={styles.exclamationText}>SOS</Text>
         </TouchableOpacity>
       </View>
 

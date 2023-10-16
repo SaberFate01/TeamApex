@@ -23,6 +23,12 @@ const HomePage = () => {
   const {user} = useContext(UserContext);
   const [groupData, setGroupData] = useState([]);
   const eventId = route.params?.eventId;
+  const groupChatData = groupData;
+  const personalChatData = data.filter(item => item.otherID !== '3');
+  const gptChatData = data.filter(item => item.otherID === '3');
+
+  // Concatenate the arrays in the desired order
+  const combinedData = [...groupChatData, ...personalChatData, ...gptChatData];
 
   const gptData = [
     {
@@ -95,6 +101,7 @@ const HomePage = () => {
         );
         const result = await response.json();
         setGroupData(result.inter_chat);
+        console.log(result.inter_chat);
       } catch (error) {
         console.error('Error fetching group chat data:', error);
       }
@@ -172,7 +179,7 @@ const HomePage = () => {
         style={styles.magnifyingGlass}
       />
       <FlatList
-        data={[...data, ...groupData]}
+        data={combinedData}
         keyExtractor={item => item.otherID || item.chatRoom.toString()}
         renderItem={({item}) => {
           if (item.otherID) {
