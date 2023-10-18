@@ -1,4 +1,4 @@
-import React, {useState, useEffect, useContext} from 'react';
+import React, {useState, useEffect, useContext, useRef } from 'react';
 import {
   StyleSheet,
   View,
@@ -15,6 +15,7 @@ import {UserContext} from '../userContext';
 import axios from 'axios';
 import {event} from 'webix';
 import { format } from 'mysql2';
+import { Alert } from 'react-native';
 
 const ChatPage = ({route, navigation}) => {
   const [input, setInput] = useState('');
@@ -24,7 +25,10 @@ const ChatPage = ({route, navigation}) => {
   const eventId = route.params?.eventId;
   const [eventData, setEventData] = useState(null);
   const [modalVisible, setModalVisible] = useState(false);
-
+  const messageLengthRef = useRef(0);
+  useEffect(() => {
+    messageLengthRef.current = messages.length;
+  }, [messages]);
 
   useEffect(() => {
     const fetchEvent = async () => {
@@ -72,6 +76,12 @@ const ChatPage = ({route, navigation}) => {
       );
       // Organize and set messages based on timestamp
       const fetchedMessages = response.data; // Adjust according to actual API response
+  
+      // Check if a new message has been received
+      if (fetchedMessages.length > messageLengthRef.current) {
+        Alert.alert('Notification', 'New message received');
+      }
+  
       setMessages(fetchedMessages);
     } catch (error) {
       console.error('Error fetching messages:', error);

@@ -1,4 +1,4 @@
-import React, {useState, useEffect, useContext} from 'react';
+import React, {useState, useEffect, useContext, useRef} from 'react';
 import {
   StyleSheet,
   View,
@@ -24,6 +24,10 @@ const ChatPageGroup = ({route, navigation}) => {
   const [modalVisible, setModalVisible] = useState(false);
   //console.log(chatRoom,userID,username);
   console.log(eventData);
+  const messageLengthRef = useRef(0);
+  useEffect(() => {
+    messageLengthRef.current = messages.length;
+  }, [messages]);
 
   useEffect(() => {
     // Fetch initial messages

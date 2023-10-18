@@ -79,7 +79,26 @@ const Profile = () => {
   };
   const chartSeries = [10, 5, 3]; // YunFei, Joel, ChatGPT
   const sliceColor = ['#F00', '#0F0', '#00F']; // Colors for each section
-
+  const getImage = imageName => {
+    switch (imageName) {
+      case 'med_social':
+        return require('../assets/mid_social.png');
+      case 'low_social':
+        return require('../assets/low_social.png');
+      case 'high_social':
+        return require('../assets/high_social.png');
+      default:
+        return require('../assets/low_social.png'); // default image
+    }
+  };
+  const images = ['low_social', 'mid_social', 'high_social'];
+  const texts = {
+    low_social: 'Low Social',
+    med_social: 'Medium Social',
+    high_social: 'High Social',
+  };
+  const randomIndex = Math.floor(Math.random() * images.length);
+  const selectedImage = images[randomIndex];
   return (
     <ScrollView contentContainerStyle={{flexGrow: 1, paddingHorizontal: 0}}>
       <View style={styles.container}>
@@ -146,17 +165,15 @@ const Profile = () => {
         <View style={styles.adviceSection}>
           <Text style={styles.boldText}>Well-Being Advice</Text>
           <Image
-            source={require('../assets/low_social.png')}
+            source={getImage(selectedImage)}
             style={styles.adviceImage}
             resizeMode="contain"
           />
-          <Text style={styles.adviceHeader}>Low Social</Text>
+          <Text style={styles.adviceHeader}>{texts[selectedImage]}</Text>
+
           <Text numberOfLines={5}>
             Engaging in social activities can enhance your mood and overall
-            well-being. Consider joining a local club or online group that
-            shares your interests. Regular interactions with friends and family,
-            even through virtual means, can also uplift your spirits and keep
-            you connected.
+            well-being.
           </Text>
         </View>
         <View style={styles.barchartSection}>
@@ -198,8 +215,15 @@ const Profile = () => {
             <View style={styles.legend}>
               {['YunFei', 'Joel', 'ChatGPT'].map((name, index) => (
                 <View style={styles.legendItem} key={name}>
-                  <View style={[styles.colorBox, {backgroundColor: sliceColor[index]}]} />
-                  <Text>{name}: {chartSeries[index]}</Text>
+                  <View
+                    style={[
+                      styles.colorBox,
+                      {backgroundColor: sliceColor[index]},
+                    ]}
+                  />
+                  <Text>
+                    {name}: {chartSeries[index]}
+                  </Text>
                 </View>
               ))}
             </View>
@@ -384,7 +408,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     marginBottom: 20,
     backgroundColor: '#f5f3f2',
-    marginTop:'50',
+    marginTop: '50',
   },
   boldText: {
     fontWeight: 'bold',
@@ -394,7 +418,7 @@ const styles = StyleSheet.create({
   chartAndLegend: {
     flexDirection: 'row',
     alignItems: 'center',
-    marginTop:'50',
+    marginTop: '50',
   },
   legend: {
     marginLeft: 20,

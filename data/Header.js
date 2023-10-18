@@ -65,7 +65,7 @@ const CustomHeader = () => {
         {renderTab('Home', 'Events')}
         {renderTab('Chat', 'Chat')}
         {renderTab('Create', 'Create')}
-        {renderTab('Profile', 'Profile')}
+        {renderTab('Profile', 'Wellness')}
       </View>
     </View>
   );

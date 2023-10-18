@@ -33,10 +33,10 @@ const HomePage = () => {
   const gptData = [
     {
       otherID: '3',
-      usernames: 'GPT',
+      usernames: 'Franklin',
       rows: [
         {
-          message: 'Chat with GPT!',
+          message: 'Chat with Franklin!',
           timestamp: new Date().toISOString(),
         },
       ],
@@ -72,7 +72,7 @@ const HomePage = () => {
         const usernames = await fetchUsernames(otherIDs);
 
         // Add GPT to usernames
-        usernames['3'] = 'GPT';
+        usernames['3'] = 'Franklin';
 
         setUsernames(usernames);
 

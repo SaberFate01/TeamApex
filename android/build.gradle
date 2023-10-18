@@ -17,5 +17,16 @@ buildscript {
     dependencies {
         classpath("com.android.tools.build:gradle")
         classpath("com.facebook.react:react-native-gradle-plugin")
+        classpath('com.google.gms:google-services:4.3.3')
     }
+}
+ext {
+    googlePlayServicesVersion = "+" // default: "+"
+    firebaseMessagingVersion = "21.1.0" // default: "21.1.0"
+
+    // Other settings
+    compileSdkVersion = 23 // default: 23
+    buildToolsVersion = "23.0.1" // default: "23.0.1"
+    targetSdkVersion = 23 // default: 23
+    supportLibVersion = "23.0.1" // default: 23.1.1
 }
