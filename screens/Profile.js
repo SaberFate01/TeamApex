@@ -78,7 +78,7 @@ const Profile = () => {
     setIsModalVisible(false);
   };
   const chartSeries = [10, 5, 3]; // YunFei, Joel, ChatGPT
-  const sliceColor = ['#F00', '#0F0', '#00F']; // Colors for each section
+  const sliceColor = ['#F46530', '#FF9E7A', '#D4EDF4']; // Colors for each section
   const getImage = imageName => {
     switch (imageName) {
       case 'med_social':
@@ -213,7 +213,7 @@ const Profile = () => {
               coverFill={'#FFF'}
             />
             <View style={styles.legend}>
-              {['YunFei', 'Joel', 'ChatGPT'].map((name, index) => (
+              {['YunFei', 'Joel', 'Franklin'].map((name, index) => (
                 <View style={styles.legendItem} key={name}>
                   <View
                     style={[
@@ -282,7 +282,7 @@ const styles = StyleSheet.create({
   redBar: {
     height: 10,
     borderRadius: 5,
-    backgroundColor: 'red',
+    backgroundColor: '#59981A',
     marginVertical: 5,
     marginHorizontal: 5,
   },
@@ -296,7 +296,7 @@ const styles = StyleSheet.create({
   },
   halfFill: {
     flex: 0.5,
-    backgroundColor: 'yellow',
+    backgroundColor: '#88CA5E',
   },
   greenText: {
     color: 'green',

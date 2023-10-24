@@ -72,7 +72,7 @@ const HomePage = () => {
         const usernames = await fetchUsernames(otherIDs);
 
         // Add GPT to usernames
-        usernames['3'] = 'Franklin';
+        usernames['3'] = 'Franklin';  
 
         setUsernames(usernames);
 
